@@ -6,6 +6,7 @@
 
 import pandas as pd
 import os
+import numpy as np
 from Basic_Functions import count_file
 
 
@@ -64,26 +65,36 @@ def get_candidate_file_count(candidate_folders):
     return candidate_file_count
 
 school_val = {}
+candidates_per_school = []
 for school_folder in school_paths:
     school_name = school_folder.split('\\')[-1]
     candidate_folders, num_cand = get_candidate_folders(school_folder)
     #print("cand_fold", candidate_folders)
     candidate_file_count = get_candidate_file_count(candidate_folders)
+    candidate_file_count = pd.DataFrame.from_dict(candidate_file_count)
     #print(candidate_file_count)
     school_val[school_name] = [candidate_file_count]
-print(school_val['Tufts'])
+    candidates_per_school.append(num_cand)
+#print(school_val['Tufts'])
 
+print('Average file_count per candidate by school')
+school_avg = []
+sch_name = []
+for item in school_val.items():
+    length = len(item[1][0].columns)
+    if length == 0:
+        val = 0
+    else:
+        val = (sum(item[1][0].sum())) / (len(item[1][0].columns))
+    #print(item[0],"Average # of files:", val)
+    school_avg.append(val)
+    sch_name.append(item[0])
 
-# candidate, school_count = get_candidate_folders(school_paths[0])
-# print("candidate", candidate[0], "school_count", school_count)
-#
-# doc_count = count_documents(candidate[1])
-# print(doc_count)
+data = pd.DataFrame(
+    {'School Name': sch_name,
+     'Average FIles Per Candidate': school_avg,
+     'Number of Candidates': candidates_per_school
+    })
 
-
-
-#
-# path = r"C:\Users\15the\OneDrive - California Institute of Technology\Selenium_JMC\Alabama\Li Zhang"
-#
-# file_count = count_file(path)
-# print(file_count)
+print(data)
+data.to_csv("Avg Files.csv", index=False)
