@@ -1,0 +1,24 @@
+import pdb
+import urllib
+from urllib.parse import urljoin
+import pandas as pd
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import requests
+import os
+import re
+from Selenium_JMC_Functions import create_folder
+from Selenium_JMC_Functions import create_df
+
+url_df = pd.read_csv(r'C:\Users\15the\Documents\NLP Projects\Selenium_JMC\School_JMC_URLs.csv')
+
+url = url_df['Url']
+school_list = url_df['School']
+
+for school in school_list:
+    school_folder = create_folder(school)
+    print(school,": ",school_folder)
+    path = f"{os.getcwd()}\{school}\{school}.csv"
+    base_cv = create_df(school_folder)
+    base_cv.to_csv(path, index=False)
+
